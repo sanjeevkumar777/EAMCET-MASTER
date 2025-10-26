@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mock Test Result</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<style>
+  body {
+    margin:0;
+    font-family:'Roboto',sans-serif;
+    background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    color:#fff;
+    display:flex;
+    flex-direction:column;
+    min-height:100vh;
+  }
+  .container {
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+  }
+  .card {
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(10px);
+    border-radius:20px;
+    padding:30px;
+    text-align:center;
+    width: 350px;
+  }
+  h1 { margin-bottom:20px;}
+  p { font-size:18px; margin:10px 0;}
+  .percentage {
+    font-size:32px;
+    font-weight:bold;
+    margin:15px 0;
+    transition: 0.5s;
+  }
+  .grade {
+    font-size:24px;
+    font-weight:bold;
+    margin-bottom:10px;
+  }
+  .rank {
+    font-size:22px;
+    font-weight:bold;
+    margin-top:10px;
+    transition:0.5s;
+  }
+  .btn {
+    margin:10px;
+    padding:12px 25px;
+    font-size:18px;
+    border:none;
+    border-radius:20px;
+    cursor:pointer;
+    background: linear-gradient(45deg,#ff416c,#ff4b2b);
+    color:#fff;
+    transition:0.3s;
+    text-decoration:none;
+    display:inline-block;
+  }
+  .btn:hover { transform:scale(1.05);}
+  footer {
+    position:fixed;
+    bottom:0;
+    width:100%;
+    padding:15px 20px;
+    text-align:center;
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(10px);
+    color:#fff;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:5px;
+  }
+  footer a {
+    margin:0 10px;
+    color:#ff416c;
+    text-decoration:none;
+    font-size:20px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="card">
+    <h1>Your Result</h1>
+    <p>Total Questions: <span id="total">0</span></p>
+    <p>Correct Answers: <span id="score">0</span></p>
+    <p class="percentage" id="percent">0%</p>
+    <p class="grade" id="grade">Grade: N/A</p>
+    <p class="rank" id="rank">Estimated Rank: N/A</p>
+    <a href="exam.html" class="btn">Retry</a>
+    <a href="index.html" class="btn">Go Home</a>
+  </div>
+</div>
+
+<footer>
+  <p>Developed by <strong>Sanjeev Kumar Ayinala</strong></p>
+  <div>
+    <a href="https://www.linkedin.com/in/sanjeevkumar77" target="_blank"><i class="fab fa-linkedin"></i></a>
+    <a href="https://www.youtube.com/@Sanjeev_TechSkills" target="_blank"><i class="fab fa-youtube"></i></a>
+    <a href="https://x.com/SanjeevKumar77_?t=z8RvpY5nuUkGQqDuTN6s-g&s=09" target="_blank"><i class="fab fa-twitter"></i></a>
+    <a href="https://www.instagram.com/" target="_blank"><i class="fab fa-instagram"></i></a>
+  </div>
+  <p style="font-size:12px;">&copy; 2025 Sanjeev Kumar Ayinala. All Rights Reserved.</p>
+</footer>
+
+<script>
+// ✅ Get stored score & total
+const score = Number(localStorage.getItem('score')) || 0;
+const total = 160; // Fixed 160 questions
+
+document.getElementById('score').textContent = score;
+document.getElementById('total').textContent = total;
+
+// Percentage calculation
+const percent = ((score / total) * 100).toFixed(2);
+
+// Animate percentage
+let count = 0;
+const percentElement = document.getElementById('percent');
+const increment = percent / 50;
+const interval = setInterval(() => {
+  count += increment;
+  if(count >= percent){
+    count = percent;
+    clearInterval(interval);
+  }
+  percentElement.textContent = count.toFixed(2) + "%";
+
+  // Color coding
+  if(count >= 80) percentElement.style.color = "#00FF00"; // green
+  else if(count >= 50) percentElement.style.color = "#FFD700"; // yellow
+  else percentElement.style.color = "#FF4500"; // red
+}, 20);
+
+// Assign grade
+const gradeElement = document.getElementById('grade');
+let grade = "F";
+if(percent >= 90) grade = "A+";
+else if(percent >= 80) grade = "A";
+else if(percent >= 70) grade = "B";
+else if(percent >= 50) grade = "C";
+else if(percent >= 35) grade = "D";
+gradeElement.textContent = "Grade: " + grade;
+
+// Estimate EAMCET Rank
+const rankElement = document.getElementById('rank');
+let rank = "N/A";
+
+if(score < 40){
+    rank = "Fail";
+    rankElement.style.color = "#FF4500"; // red
+} else {
+    const marksAbove40 = score - 40;
+    let estimatedRank = 100000 - (marksAbove40 / 5) * 5000; // every 5 marks improve rank
+    if(estimatedRank < 1) estimatedRank = 1;
+    rank = Math.floor(estimatedRank);
+
+    // Color coding for rank
+    if(rank <= 5000) rankElement.style.color = "#00FF00"; // top ranks green
+    else if(rank <= 20000) rankElement.style.color = "#ADFF2F"; // light green
+    else if(rank <= 50000) rankElement.style.color = "#FFD700"; // yellow
+    else rankElement.style.color = "#FF8C00"; // orange
+}
+rankElement.textContent = "Estimated Rank: " + rank;
+</script>
+
+</body>
+</html>

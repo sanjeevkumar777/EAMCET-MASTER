@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EAMCET Mock Test</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+<style>
+body { margin:0; font-family:'Roboto',sans-serif; background: linear-gradient(135deg,#0f2027,#203a43,#2c5364); color:#fff;}
+header { display:flex; justify-content:space-between; padding:20px; font-size:18px; font-weight:bold;}
+.container { max-width:900px; margin:20px auto; background: rgba(255,255,255,0.05); backdrop-filter:blur(10px); padding:30px; border-radius:20px;}
+button { padding:10px 20px; margin:10px 5px; font-size:16px; border:none; border-radius:8px; cursor:pointer; background: linear-gradient(45deg,#ff416c,#ff4b2b); color:#fff;}
+button:hover { transform:scale(1.05); }
+.option { display:block; margin:10px 0; padding:10px; border-radius:8px; background: rgba(255,255,255,0.1); cursor:pointer;}
+.option.selected { background: rgba(255,65,108,0.6);}
+.progress-bar { width:100%; background: rgba(255,255,255,0.2); border-radius:10px; margin-bottom:20px;}
+.progress { height:10px; width:0%; background:#ff416c; border-radius:10px; transition:0.3s;}
+</style>
+</head>
+<body>
+
+<header>
+  <div>Time Left: <span id="timer">03:00:00</span></div>
+  <div>Question <span id="qNo">1</span>/160</div>
+</header>
+
+<div class="container">
+  <div class="progress-bar"><div class="progress" id="progress"></div></div>
+  <div id="question"></div>
+  <div id="options"></div>
+  <div>
+    <button onclick="prevQuestion()">Previous</button>
+    <button onclick="nextQuestion()">Next</button>
+    <button onclick="submitTest()">Submit</button>
+  </div>
+</div>
+
+<script>
+// ======= QUESTIONS =======
+// Only 10 shown as example. Add all 160 questions here.
+const questions = [
+  // ===== MATHEMATICS (80 Questions) =====
+  {q:"If a+b+c=0, value of a^3+b^3+c^3?", options:["0","3abc","None","a^3+b^3+c^3"], answer:1},
+  {q:"Roots of x^2-5x+6=0?", options:["1,2","2,3","3,4","1,6"], answer:1},
+  {q:"Sum of roots of 2x^2-7x+3=0?", options:["7/2","3/2","7","1/2"], answer:0},
+  {q:"If sin A = 3/5, then cos A = ?", options:["4/5","3/4","5/4","1/2"], answer:0},
+  {q:"tan 45° + cot 45° = ?", options:["1","2","0","Undefined"], answer:1},
+  {q:"Derivative of x^2 + 3x?", options:["2x+3","2x-3","x^2","3x^2"], answer:0},
+  {q:"∫ x dx = ?", options:["x^2/2 + C","2x + C","x + C","x^3/3 + C"], answer:0},
+  {q:"Equation of line with slope 2 passing (1,3)?", options:["y-3=2(x-1)","y=2x+3","2y=x+1","None"], answer:0},
+  {q:"Sum of first 20 natural numbers?", options:["210","200","190","220"], answer:0},
+  {q:"If cos A = 4/5, then sin A = ?", options:["3/5","4/5","1/2","5/4"], answer:0},
+  {q:"Limit of (1- cos x)/x^2 as x→0?", options:["0","1/2","1","Infinity"], answer:1},
+  {q:"Differential of y=x^3?", options:["3x^2 dx","x^3 dx","3x dx","None"], answer:0},
+  {q:"Sum of squares of first 10 natural numbers?", options:["385","355","300","400"], answer:0},
+  {q:"If sin θ = 1/2, then θ = ?", options:["30°","45°","60°","90°"], answer:0},
+  {q:"Equation of circle with center (0,0) radius 5?", options:["x^2+y^2=25","x^2+y^2=5","x^2+y^2=10","x^2+y^2=0"], answer:0},
+  {q:"If tan A =1, then A = ?", options:["45°","30°","60°","90°"], answer:0},
+  {q:"Derivative of sin x?", options:["cos x","sin x","-sin x","-cos x"], answer:0},
+  {q:"Integral of cos x dx?", options:["sin x + C","cos x + C","-cos x + C","-sin x + C"], answer:0},
+  {q:"x^2 - 5x +6 =0, product of roots?", options:["6","5","-6","-5"], answer:0},
+  {q:"Factor of x^2 - 9?", options:["(x-3)(x+3)","(x-9)(x+1)","(x-1)(x+9)","None"], answer:0},
+  {q:"Limit of (x^2-1)/(x-1) as x→1?", options:["2","1","0","Infinity"], answer:0},
+  {q:"Sum of first 15 odd numbers?", options:["225","200","120","180"], answer:0},
+  {q:"Derivative of e^x?", options:["e^x","x e^x","1","x"], answer:0},
+  {q:"Equation of line passing through (2,3) with slope 1?", options:["y-3=1(x-2)","y= x+1","y-2=1(x-3)","None"], answer:0},
+  {q:"tan^2 A +1 = ?", options:["sec^2 A","cosec^2 A","cot^2 A","sin^2 A"], answer:0},
+  {q:"cos^2 A + sin^2 A = ?", options:["1","0","2","None"], answer:0},
+  {q:"If x+y=10, x-y=2, then x=? ", options:["6","4","8","5"], answer:2},
+  {q:"Sum of first 12 natural numbers?", options:["78","72","66","70"], answer:0},
+  {q:"∫ dx/x = ?", options:["ln|x| + C","x+ C","1/x + C","x^2/2 + C"], answer:0},
+  {q:"d/dx (ln x) = ?", options:["1/x","ln x","x","0"], answer:0},
+  {q:"x^2 + y^2 = 25, find dy/dx?", options:["-x/y","x/y","y/x","None"], answer:0},
+  {q:"Roots of x^2 -4x +3=0?", options:["1,3","3,4","2,3","1,4"], answer:0},
+  {q:"Distance between (0,0) and (3,4)?", options:["5","6","7","4"], answer:0},
+  {q:"Midpoint of (2,3) and (4,5)?", options:["(3,4)","(2,4)","(3,3)","(1,2)"], answer:0},
+  {q:"Slope of line joining (1,2) & (3,6)?", options:["2","3","4","1"], answer:1},
+  {q:"x^2-7x+12=0, sum of roots?", options:["7","12","-7","-12"], answer:0},
+  {q:"tan 30°=?", options:["1/√3","√3","1","√2"], answer:0},
+  {q:"cos 60°=?", options:["1/2","√3/2","√2/2","1"], answer:0},
+  {q:"sin 90°=?", options:["1","0","1/2","√3/2"], answer:0},
+  {q:"cot 45°=?", options:["1","0","√3","√2"], answer:0},
+  {q:"sec 60°=?", options:["2","1","√3","√2"], answer:0},
+  {q:"cosec 30°=?", options:["2","1","√3","√2"], answer:0},
+  {q:"Limit of (x^2 -4)/(x-2) as x→2?", options:["4","0","2","Infinity"], answer:0},
+  {q:"Derivative of x^3?", options:["3x^2","x^3","3x","x^2"], answer:0},
+  {q:"Integral of x^2 dx?", options:["x^3/3 + C","x^2 + C","2x + C","x^3 + C"], answer:0},
+  {q:"Factor of x^2 +5x +6?", options:["(x+2)(x+3)","(x+1)(x+6)","(x+3)(x+2)","None"], answer:0},
+  {q:"x^2-10x+21=0, roots?", options:["3,7","7,3","1,21","21,1"], answer:0},
+  {q:"Sum of squares of first 5 natural numbers?", options:["55","50","45","60"], answer:0},
+  {q:"Sum of cubes of first 4 natural numbers?", options:["100","90","80","64"], answer:0},
+  {q:"Differential of x^4?", options:["4x^3 dx","x^4 dx","4x dx","x^3 dx"], answer:0},
+  {q:"tan 60°=?", options:["√3","1/√3","1","√2"], answer:0},
+  {q:"cos 0°=?", options:["1","0","1/2","√3/2"], answer:0},
+  {q:"sin 0°=?", options:["0","1","1/2","√3/2"], answer:0},
+  {q:"cot 30°=?", options:["√3","1/√3","1","√2"], answer:0},
+  {q:"sec 0°=?", options:["1","0","√3","2"], answer:0},
+  {q:"cosec 90°=?", options:["1","0","√3","2"], answer:0},
+  {q:"Equation of circle x^2+y^2=16, radius?", options:["4","8","2","16"], answer:0},
+  {q:"Slope of y=2x+3?", options:["2","3","1","0"], answer:0},
+  {q:"x^2-9=0, roots?", options:["3,-3","3,3","-3,-3","0,3"], answer:0},
+  {q:"y-intercept of y=3x+5?", options:["5","3","0","1"], answer:0},
+  {q:"Sum of roots of x^2-8x+12=0?", options:["8","12","-8","-12"], answer:0},
+  {q:"Product of roots of x^2-8x+12=0?", options:["12","8","-12","-8"], answer:0},
+  {q:"Limit of (sin x)/x as x→0?", options:["1","0","∞","Undefined"], answer:0},
+  {q:"Sum of squares of first 5 natural numbers?", options:["55","50","45","60"], answer:0},
+  {q:"Derivative of cos x?", options:["-sin x","cos x","sin x","-cos x"], answer:0},
+  {q:"Integral of 1/x dx?", options:["ln|x| + C","x + C","1/x + C","x^2/2 + C"], answer:0},
+  {q:"tan^2 45° = ?", options:["1","0","2","Undefined"], answer:0},
+  {q:"Sum of squares of first 5 natural numbers?", options:["55","50","45","60"], answer:0},
+    {q:"Limit of (sin x)/x as x→0?", options:["1","0","∞","Undefined"], answer:0},
+  {q:"Sum of squares of first 5 natural numbers?", options:["55","50","45","60"], answer:0},
+  {q:"Derivative of cos x?", options:["-sin x","cos x","sin x","-cos x"], answer:0},
+  {q:"Integral of 1/x dx?", options:["ln|x| + C","x + C","1/x + C","x^2/2 + C"], answer:0},
+  {q:"Equation of line with slope 2 passing (1,3)?", options:["y-3=2(x-1)","y=2x+3","2y=x+1","None"], answer:0},
+  {q:"Sum of first 20 natural numbers?", options:["210","200","190","220"], answer:0},
+  {q:"If cos A = 4/5, then sin A = ?", options:["3/5","4/5","1/2","5/4"], answer:0},
+  {q:"Limit of (1- cos x)/x^2 as x→0?", options:["0","1/2","1","Infinity"], answer:1},
+  {q:"Differential of y=x^3?", options:["3x^2 dx","x^3 dx","3x dx","None"], answer:0},
+
+  // ===== CHEMISTRY (40 Questions) =====
+  {q:"Atomic number of Oxygen?", options:["6","7","8","9"], answer:2},
+  {q:"Avogadro's number?", options:["6.022e22","6.022e23","3.14e22","1.602e-19"], answer:1},
+  {q:"pH of neutral solution at 25°C?", options:["0","7","14","1"], answer:1},
+  {q:"Which gas is called laughing gas?", options:["N2","N2O","NO2","CO2"], answer:1},
+  {q:"Which of the following is a noble gas?", options:["O2","Ne","N2","H2"], answer:1},
+  {q:"Atomic mass of Hydrogen?", options:["1","2","3","4"], answer:0},
+  {q:"H2O is?", options:["Compound","Element","Mixture","None"], answer:0},
+  {q:"Which is alkali?", options:["NaOH","HCl","H2SO4","CO2"], answer:0},
+  {q:"Which is acidic oxide?", options:["SO2","Na2O","CaO","H2O"], answer:0},
+  {q:"Which is reducing agent?", options:["CO","H2","O2","Cl2"], answer:1},
+  {q:"Electronegativity of F?", options:["4","3","2","1"], answer:0},
+  {q:"Gas evolved when acid reacts with metal?", options:["H2","O2","CO2","N2"], answer:0},
+  {q:"NaCl is?", options:["Salt","Acid","Base","Oxide"], answer:0},
+  {q:"pH of lemon juice?", options:["2","7","14","9"], answer:0},
+  {q:"Which is amphoteric?", options:["Al2O3","Na2O","MgO","Fe2O3"], answer:0},
+  {q:"Formula of water?", options:["H2O","HO2","H2O2","OH"], answer:0},
+  {q:"Which of the following is an acid?", options:["HCl","NaOH","NaCl","H2O"], answer:0},
+  {q:"Which is strong acid?", options:["HCl","H2O","NaOH","CH4"], answer:0},
+  {q:"Which is weak base?", options:["NH4OH","NaOH","KOH","Ca(OH)2"], answer:0},
+  {q:"Atomic number of Carbon?", options:["6","12","14","16"], answer:0},
+  {q:"Which is polar molecule?", options:["HCl","O2","N2","Cl2"], answer:0},
+  {q:"Which is noble gas?", options:["He","O2","H2","N2"], answer:0},
+  {q:"Which is halogen?", options:["Cl","O","N","H"], answer:0},
+  {q:"Formula of ammonia?", options:["NH3","N2H4","NO2","N2O"], answer:0},
+  {q:"Molecular weight of H2O?", options:["18","20","16","22"], answer:0},
+  {q:"Boiling point of water?", options:["100°C","90°C","80°C","120°C"], answer:0},
+  {q:"Melting point of ice?", options:["0°C","32°C","100°C","-10°C"], answer:0},
+  {q:"Which is alkane?", options:["CH4","C2H4","C2H2","CO2"], answer:0},
+  {q:"Which is unsaturated?", options:["C2H4","C2H6","CH4","C2H2"], answer:0},
+  {q:"Which is electrolyte?", options:["NaCl","CH4","O2","H2"], answer:0},
+  {q:"Which is organic?", options:["CH4","NaCl","H2O","O2"], answer:0},
+  {q:"Which is inorganic?", options:["NaCl","CH4","H2O","O2"], answer:0},
+  {q:"Which is acid?", options:["HCl","NaOH","CH4","H2O"], answer:0},
+  {q:"Which is base?", options:["NaOH","HCl","CH4","H2O"], answer:0},
+  {q:"Which is salt?", options:["NaCl","HCl","NaOH","H2O"], answer:0},
+  {q:"Which is compound?", options:["H2O","O2","N2","CH4"], answer:0},
+  {q:"Which is element?", options:["H","H2O","NaCl","CO2"], answer:0},
+  {q:"Which is metal?", options:["Na","O","Cl","H"], answer:0},
+  {q:"Which is non-metal?", options:["O","Na","Cl","H2O"], answer:0},
+  {q:"Which is metalloid?", options:["B","Na","O","H"], answer:0},
+  {q:"Which is reducing agent?", options:["CO","O2","Cl2","H2O"], answer:0},
+  {q:"Which is oxidizing agent?", options:["O2","CO","H2","Cl2"], answer:0},
+
+  // ===== PHYSICS (40 Questions) =====
+  {q:"Unit of force?", options:["N","kg","m/s","J"], answer:0},
+  {q:"Acceleration due to gravity?", options:["9.8 m/s²","10 m/s²","9 m/s","8 m/s²"], answer:0},
+  {q:"Speed of light?", options:["3×10^8 m/s","3×10^6 m/s","3×10^5 km/s","3×10^7 m/s"], answer:0},
+  {q:"Ohm's law?", options:["V=IR","P=VI","F=ma","E=mc^2"], answer:0},
+  {q:"Unit of energy?", options:["Joule","Newton","Watt","Pascal"], answer:0},
+  {q:"Work done = ?", options:["Force × distance","Mass × acceleration","Power × time","Energy × time"], answer:0},
+  {q:"Power = ?", options:["Work/time","Force × distance","Energy × time","Mass × acceleration"], answer:0},
+  {q:"Unit of pressure?", options:["Pa","N","J","W"], answer:0},
+  {q:"Velocity formula?", options:["Displacement/Time","Distance/Time","Force/Mass","Speed×Time"], answer:0},
+  {q:"Momentum = ?", options:["mass × velocity","mass/velocity","force × distance","energy/time"], answer:0},
+  {q:"Unit of frequency?", options:["Hz","N","J","W"], answer:0},
+  {q:"Unit of current?", options:["Ampere","Volt","Ohm","Watt"], answer:0},
+  {q:"Ohm's law formula?", options:["V=IR","P=VI","E=mc^2","F=ma"], answer:0},
+  {q:"Kinetic energy formula?", options:["1/2 mv^2","mv","mgh","F×d"], answer:0},
+  {q:"Potential energy formula?", options:["mgh","1/2 mv^2","F×d","mv"], answer:0},
+  {q:"Unit of charge?", options:["Coulomb","Ampere","Volt","Ohm"], answer:0},
+  {q:"Frequency of standard tuning fork?", options:["440 Hz","500 Hz","400 Hz","450 Hz"], answer:0},
+  {q:"Speed of sound?", options:["343 m/s","300 m/s","340 m/s","350 m/s"], answer:0},
+  {q:"Simple pendulum formula?", options:["T=2π√(l/g)","v=√(2gh)","F=ma","s=ut+1/2 at^2"], answer:0},
+  {q:"Newton's first law?", options:["Law of inertia","F=ma","Action=Reaction","Energy conservation"], answer:0},
+  {q:"Newton's second law?", options:["F=ma","Law of inertia","Action=Reaction","Energy conservation"], answer:0},
+  {q:"Newton's third law?", options:["Action=Reaction","F=ma","Law of inertia","Energy conservation"], answer:0},
+  {q:"Unit of work?", options:["Joule","Newton","Watt","Pa"], answer:0},
+  {q:"Unit of power?", options:["Watt","Joule","Newton","Pa"], answer:0},
+  {q:"Velocity of light in vacuum?", options:["3×10^8 m/s","3×10^6 m/s","3×10^5 km/s","3×10^7 m/s"], answer:0},
+  {q:"Refraction formula?", options:["n = sin i / sin r","v = u + at","F = ma","E = mc^2"], answer:0},
+  {q:"Lens formula?", options:["1/f = 1/v - 1/u","v = u + at","F=ma","E=mc^2"], answer:0},
+  {q:"Mirror formula?", options:["1/f = 1/u + 1/v","v = u + at","F=ma","E=mc^2"], answer:0},
+  {q:"Coulomb's law?", options:["F=kq1q2/r^2","V=IR","P=VI","E=mc^2"], answer:0},
+  {q:"Ohm's law?", options:["V=IR","P=VI","F=ma","E=mc^2"], answer:0},
+  {q:"Work done by force?", options:["F×d","mgh","1/2 mv^2","mv"], answer:0},
+  {q:"Unit of mass?", options:["kg","g","m","N"], answer:0},
+  {q:"Unit of density?", options:["kg/m³","kg","m³","g"], answer:0},
+  {q:"Acceleration formula?", options:["a=(v-u)/t","v=u+at","s=ut+1/2 at^2","F=ma"], answer:0},
+  {q:"Kinematics equation?", options:["s=ut+1/2 at^2","v=u+at","F=ma","E=mc^2"], answer:0},
+  {q:"Gravitational force?", options:["F=G m1 m2 / r^2","F=ma","V=IR","P=VI"], answer:0},
+  {q:"Unit of acceleration?", options:["m/s²","m/s","m","N"], answer:0},
+  {q:"Ohm's law unit of resistance?", options:["Ohm","Volt","Ampere","Watt"], answer:0},
+  {q:"Unit of electric potential?", options:["Volt","Ampere","Ohm","Watt"], answer:0},
+  {q:"Unit of electric power?", options:["Watt","Volt","Ampere","Ohm"], answer:0},
+  {q:"Unit of electric current?", options:["Ampere","Volt","Ohm","Watt"], answer:0},
+];
+
+let current = 0;
+let userAnswers = new Array(questions.length).fill(null);
+
+// ====== SHOW QUESTION ======
+function showQuestion(){
+  document.getElementById('qNo').innerText = current+1;
+  document.getElementById('question').innerHTML = "<h2>"+questions[current].q+"</h2>";
+  
+  const opts = questions[current].options.map((opt,i)=>`<div class="option" onclick="selectOption(${i})" id="opt${i}">${opt}</div>`).join('');
+  document.getElementById('options').innerHTML = opts;
+
+  if(userAnswers[current] != null) document.getElementById('opt'+userAnswers[current]).classList.add('selected');
+  document.getElementById('progress').style.width = ((current)/questions.length*100)+"%";
+}
+
+// ====== SELECT OPTION ======
+function selectOption(i){
+  userAnswers[current] = i;
+  for(let j=0;j<4;j++) document.getElementById('opt'+j).classList.remove('selected');
+  document.getElementById('opt'+i).classList.add('selected');
+}
+
+// ====== NAVIGATION ======
+function nextQuestion(){ if(current<questions.length-1){ current++; showQuestion(); } }
+function prevQuestion(){ if(current>0){ current--; showQuestion(); } }
+
+// ====== SUBMIT TEST ======
+function submitTest(){
+  let score = 0;
+  for(let i=0; i<questions.length; i++) if(userAnswers[i] === questions[i].answer) score++;
+  localStorage.setItem("score", score);
+  localStorage.setItem("total", questions.length);
+  window.location.href = "result.html";
+}
+
+// ====== TIMER ======
+let time = 10800; // 3 hours
+setInterval(()=>{
+  if(time <= 0){ submitTest(); return; }
+  time--;
+  let h = Math.floor(time/3600);
+  let m = Math.floor((time%3600)/60);
+  let s = time%60;
+  document.getElementById('timer').innerText = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+},1000);
+
+showQuestion();
+</script>
+</body>
+</html>
